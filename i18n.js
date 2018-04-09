@@ -9,19 +9,39 @@ var bitI18N = bitI18N || (function bitI18NModule() {
     let resources = {};
 
     /**
+     * Guards a string value
+     * @param {string} value value to be guarded
+     */
+    const guard = (value, name) => {
+        if (value === null) {
+            throw `${name} is null`;
+        }
+
+        if (value === undefined) {
+            throw `${name} is undefined`;
+        }
+
+        if (typeof value !== 'string') {
+            throw `${name} is not a string`;
+        }
+    };
+
+    /**
      * Sets a value for a specifict key in the culture specified
      * @param {string} culture culture locale
      * @param {string} key key of the value
      * @param {string} value localized string
      */
     const setValueOf = (culture, key, value) => {
+        guard(culture, 'culture');
+        guard(key, 'key');
+        guard(value, 'value');
+
         let cultureDoesNotExists = resources[culture] === undefined;
 
         if (cultureDoesNotExists) {
-            // create new key inside resources object
-            resources[culture] = {
-                name: ''
-            };
+            // create new object inside resources object
+            resources[culture] = {};
         }
 
         resources[culture][key] = value;
@@ -48,24 +68,31 @@ var bitI18N = bitI18N || (function bitI18NModule() {
     /**
      * Gets a value by key and the current browser culture
      * @param {string} key key of the value
+     * @param {string} culture culture to be used
      */
-    const getValueOf = (key) => {
-        let culture = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
-        let value = null;
-        let cultureHyphenIndex = culture.indexOf('-');
-        let cultureHasHyphen = cultureHyphenIndex !== -1;
+    const getValueOf = (key, culture) => {
+        guard(key, 'key');
 
-        culture = cultureHasHyphen ? culture.substring(0, cultureHyphenIndex) : culture;
+        if (arguments.length === 2) {
+            guard(culture, 'culture');
+        } else {
+            culture = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
+        }
 
-        value = resources[culture][key];
-
-        return value || 'string not found';
+        return resources[culture][key] || 'string not found';
     };
 
     /**
      * Gets all the resources
+     * @param {string} culture culture to be used
      */
-    const getValuesOf = () => resources;
+    const getValuesOf = (culture) => {
+        if (arguments.length === 1) {
+            guard(culture, 'culture');
+        }
+
+        return culture ? resources[culture] : resources;
+    };
 
     /**
      * Set of functionality exposed as public members of the module
