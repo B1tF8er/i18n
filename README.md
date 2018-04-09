@@ -32,6 +32,7 @@ Throws an exception if:
 
 Returns a localized string if found in the culture, string not found otherwise
 ```javascript
+bitI18N.get('test'); // uses default browser culture
 bitI18N.get('es', 'test');
 bitI18N.get('es-MX', 'test');
 ```
