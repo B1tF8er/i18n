@@ -84,7 +84,7 @@ var bitI18N = bitI18N || (function bitI18NModule() {
 
     /**
      * Gets all the resources
-     * @param {string} culture culture to be used
+     * @param {string} culture culture to be used, optional 
      */
     const getValuesOf = (culture) => {
         if (culture) {
