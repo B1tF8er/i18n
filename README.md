@@ -11,7 +11,7 @@ the values are case sensitive __**t**est__ is not the same as __**T**est__
 ### getAll
 Takes as optional argument the culture, if no argument is passed it returns all the resources
 
-Throws an exception if the argument is not a string, is null or undefined
+Throws an exception if the argument is not a string
 
 Returns the collection of resources as a collection of Cultures which each has a collection of key value pairs with the localized strings
 ```javascript

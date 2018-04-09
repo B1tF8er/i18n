@@ -4,6 +4,11 @@
 var bitI18N = bitI18N || (function bitI18NModule() {
     'use strict';
     /**
+     * Default browser culture
+     */
+    const browserCulture = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
+
+    /**
      * Collection of cultures which each has another collection of key value pairs
      */
     let resources = {};
@@ -68,18 +73,13 @@ var bitI18N = bitI18N || (function bitI18NModule() {
     /**
      * Gets a value by key and the current browser culture
      * @param {string} key key of the value
-     * @param {string} culture culture to be used
+     * @param {string} culture culture to be used optional, if not specified the browser default culture is taken
      */
-    const getValueOf = (key, culture) => {
+    const getValueOf = (key, culture = browserCulture) => {
         guard(key, 'key');
+        guard(culture, 'culture');
 
-        if (arguments.length === 2) {
-            guard(culture, 'culture');
-        } else {
-            culture = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
-        }
-
-        return resources[culture][key] || 'string not found';
+        return resources[culture] ? resources[culture][key] : 'string not found';
     };
 
     /**
@@ -87,11 +87,12 @@ var bitI18N = bitI18N || (function bitI18NModule() {
      * @param {string} culture culture to be used
      */
     const getValuesOf = (culture) => {
-        if (arguments.length === 1) {
+        if (culture) {
             guard(culture, 'culture');
+            return resources[culture];
         }
 
-        return culture ? resources[culture] : resources;
+        return resources;
     };
 
     /**
