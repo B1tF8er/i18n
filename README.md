@@ -1,5 +1,5 @@
 # Bit.I18N
-Small internationalization module to localize strings in JaavaScript
+Small internationalization module to localize strings in JavaScript
 
 # Usage
 Download or clone the repo to get the i18n.js file, add it to your project and create a reference to it your bundles or pages. 
