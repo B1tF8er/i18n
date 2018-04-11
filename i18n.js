@@ -79,7 +79,7 @@ var bitI18N = bitI18N || (function bitI18NModule() {
         guard(key, 'key');
         guard(culture, 'culture');
 
-        return resources[culture] ? resources[culture][key] : 'string not found';
+        return resources[culture] ? resources[culture][key] || 'string not found' : 'culture not found';
     };
 
     /**
