@@ -1,108 +1,68 @@
-/**
- * Small module to allow internationalization
- */
-var bitI18N = bitI18N || (function bitI18NModule() {
-    'use strict';
-    /**
-     * Default browser culture
-     */
-    const browserCulture = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
+class BitI18N {
+  constructor() {
+    this.browserCulture = navigator.languages
+      ? navigator.languages[0]
+      : navigator.language || navigator.userLanguage;
+    this.resources = {};
+  }
 
-    /**
-     * Collection of cultures which each has another collection of key value pairs
-     */
-    let resources = {};
+  guard(value, name) {
+    if (value === null) {
+      throw `${name} is null`;
+    }
 
-    /**
-     * Guards a string value
-     * @param {string} value value to be guarded
-     */
-    const guard = (value, name) => {
-        if (value === null) {
-            throw `${name} is null`;
-        }
+    if (value === undefined) {
+      throw `${name} is undefined`;
+    }
 
-        if (value === undefined) {
-            throw `${name} is undefined`;
-        }
+    if (typeof value !== "string") {
+      throw `${name} is not a string`;
+    }
+  }
 
-        if (typeof value !== 'string') {
-            throw `${name} is not a string`;
-        }
-    };
+  set(culture, key, value) {
+    this.guard(culture, "culture");
+    this.guard(key, "key");
+    this.guard(value, "value");
 
-    /**
-     * Sets a value for a specifict key in the culture specified
-     * @param {string} culture culture locale
-     * @param {string} key key of the value
-     * @param {string} value localized string
-     */
-    const setValueOf = (culture, key, value) => {
-        guard(culture, 'culture');
-        guard(key, 'key');
-        guard(value, 'value');
+    let cultureDoesNotExists = this.resources[culture] === undefined;
 
-        let cultureDoesNotExists = resources[culture] === undefined;
+    if (cultureDoesNotExists) {
+      this.resources[culture] = {};
+    }
 
-        if (cultureDoesNotExists) {
-            // create new object inside resources object
-            resources[culture] = {};
-        }
+    this.resources[culture][key] = value;
+  }
 
-        resources[culture][key] = value;
-    };
+  setMany(resources) {
+    let cultures = Object.keys(resources);
 
-    /**
-     * Sets a collection of one and/or multiple cultures with their own set of key value pairs
-     * @param {Object} resources collection of resources
-     */
-    const setValuesOf = (resources) => {
-        let cultures = Object.keys(resources);
+    cultures.forEach(culture => {
+      let keys = Object.keys(resources[culture]);
 
-        cultures.forEach(culture => {
-            let keys = Object.keys(resources[culture]);
+      keys.forEach(key => {
+        let value = resources[culture][key];
 
-            keys.forEach(key => {
-                let value = resources[culture][key];
+        this.set(culture, key, value);
+      });
+    });
+  }
 
-                setValueOf(culture, key, value);
-            });
-        });
-    };
+  get(key, culture = this.browserCulture) {
+    this.guard(key, "key");
+    this.guard(culture, "culture");
 
-    /**
-     * Gets a value by key and the current browser culture
-     * @param {string} key key of the value
-     * @param {string} culture culture to be used optional, if not specified the browser default culture is taken
-     */
-    const getValueOf = (key, culture = browserCulture) => {
-        guard(key, 'key');
-        guard(culture, 'culture');
+    return this.resources[culture]
+      ? this.resources[culture][key] || "string not found"
+      : "culture not found";
+  }
 
-        return resources[culture] ? resources[culture][key] || 'string not found' : 'culture not found';
-    };
+  getAll(culture) {
+    if (culture) {
+      this.guard(culture, "culture");
+      return this.resources[culture];
+    }
 
-    /**
-     * Gets all the resources
-     * @param {string} culture culture to be used, optional 
-     */
-    const getValuesOf = (culture) => {
-        if (culture) {
-            guard(culture, 'culture');
-            return resources[culture];
-        }
-
-        return resources;
-    };
-
-    /**
-     * Set of functionality exposed as public members of the module
-     */
-    const API = {
-        set: setValueOf,
-        setMany: setValuesOf,
-        get: getValueOf,
-        getAll: getValuesOf
-    };
-    return API;
-})();
+    return this.resources;
+  }
+}
